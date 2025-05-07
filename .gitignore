@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+/logfile.log
+/.mvn/wrapper/maven-wrapper.properties
+/mvnw
+/mvnw.cmd
