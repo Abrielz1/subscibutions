@@ -1,0 +1,54 @@
+server:
+   port: 8080
+
+spring:
+  application:
+    name: subsvibutions
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/subscriptions_db
+    username: root
+    password: root
+    hikari:
+      schema: public
+      connection-init-sql: CREATE SCHEMA IF NOT EXISTS user_schema
+      connection-timeout: 10000
+
+#  flyway:
+#    enabled: true
+#    locations: classpath:db/migration
+#    baseline-on-migrate: true
+#    default-schema: public
+#    out-of-order: false
+
+logging:
+  file:
+    name: logfile.log
+  level:
+    org:
+      springframework:
+        orm:
+          jpa:
+            INFO
+          JpaTransactionManager:
+            DEBUG
+        transaction:
+          INFO
+        interceptor:
+          TRACE
+  logback:
+    rolling policy:
+      max-file-size: 50MB
+      max-history: 1
+
