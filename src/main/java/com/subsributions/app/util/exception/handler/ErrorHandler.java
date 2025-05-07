@@ -18,7 +18,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handlerNotFoundException(final UserNotFoundException e) {
 
-       // log.warn("404 {}", e.getMessage(), e);
+        log.warn("404 {}", e.getMessage(), e);
         return new ErrorResponse("User was not found 404", e.getMessage());
     }
 
@@ -26,7 +26,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handlerBadRequest(final BadRequestException e) {
 
-      //  log.warn("400 {}", e.getMessage(), e);
+        log.warn("400 {}", e.getMessage(), e);
         return new ErrorResponse("Bad request was committed 400 ", e.getMessage());
     }
 
@@ -34,7 +34,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ErrorResponse handlerUnsupportedState(final AccessDeniedException exception) {
 
-     //   log.warn("403 {}", exception.getMessage(), exception);
+        log.warn("403 {}", exception.getMessage(), exception);
         return new ErrorResponse(exception.getMessage(), exception.getMessage());
     }
 
@@ -42,7 +42,7 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorResponse handlerAlreadyExistsHandler(final AlreadyExistsException exception) {
 
-       // log.warn("401 {}", exception.getMessage(), exception);
+        log.warn("401 {}", exception.getMessage(), exception);
         return new ErrorResponse("User already exists! 401 "
                 + exception.getMessage(), exception.getMessage());
     }
@@ -50,7 +50,7 @@ public class ErrorHandler {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleInternalServerError(Exception ex) {
-       // log.error("Internal server error: {}", ex.getMessage(), ex);
+        log.error("Internal server error: {}", ex.getMessage(), ex);
         return new ErrorResponse("Internal server error", ex.getMessage());
     }
 }
