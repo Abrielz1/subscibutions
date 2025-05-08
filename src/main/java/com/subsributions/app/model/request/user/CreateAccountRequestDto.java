@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record CreateAccountRequest(@Schema(description = "Email user/Почта юзера")
+public record CreateAccountRequestDto(@Schema(description = "Email user/Почта юзера")
                                    @Email
                                    @NotBlank
                                    String email,

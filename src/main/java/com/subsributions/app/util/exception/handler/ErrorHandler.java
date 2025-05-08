@@ -5,6 +5,7 @@ import com.subsributions.app.util.exception.exceptions.BadRequestException;
 import com.subsributions.app.util.exception.exceptions.UserNotFoundException;
 import com.subsributions.app.util.exception.exceptions.AccessDeniedException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -52,6 +53,13 @@ public class ErrorHandler {
     public ErrorResponse handleInternalServerError(Exception ex) {
         log.error("Internal server error: {}", ex.getMessage(), ex);
         return new ErrorResponse("Internal server error", ex.getMessage());
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        log.warn("Conflict: {}", ex.getMessage());
+        return new ErrorResponse("Data conflict", ex.getMostSpecificCause().getMessage());
     }
 }
 

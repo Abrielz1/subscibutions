@@ -1,6 +1,6 @@
 package com.subsributions.app.controller.user;
 
-import com.subsributions.app.model.request.user.CreateAccountRequest;
+import com.subsributions.app.model.request.user.CreateAccountRequestDto;
 import com.subsributions.app.model.request.user.UpdateUserAccountRequestDto;
 import com.subsributions.app.model.response.user.UserResponseDto;
 import com.subsributions.app.service.UserCRUDService;
@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "UserCRUDController", description = "Контроллер для CRUD операций над пользователями")
@@ -47,23 +46,23 @@ public class UserCRUDController {
     @ResponseStatus(HttpStatus.OK)
     public UserResponseDto getUserByEmail(@NotBlank @Email @RequestParam(name = "email") String email) {
 
-        log.info("\nUser with email: {} was sent from users controller", email);
+        log.info("User with email: {} was sent from users controller", email);
 
         return userCRUDService.getUserByEmail(email);
     }
 
     @Operation(
             summary = "Получение списка пользователей со limit/offset пагинацией",
-            description = "\"Получение списка пользователей"
+            description = "Получение списка пользователей"
     )
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
     public List<UserResponseDto> getUsersList(@PositiveOrZero @RequestParam(defaultValue = "0") Integer from,
                                                   @Positive @RequestParam(defaultValue = "10") Integer size) {
 
-        log.info("\nlist of users were sent from users controller");
+        log.info("list of users were sent from users controller");
 
-        return userCRUDService.getUsersList(PageRequest.of(from / size, size));
+        return userCRUDService.getUsersList(PageRequest.of(from, size));
     }
 
     @Operation(
@@ -72,9 +71,9 @@ public class UserCRUDController {
     )
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto register(@Validated(Create.class) @RequestBody CreateAccountRequest newUser) {
+    public UserResponseDto register(@Validated(Create.class) @RequestBody CreateAccountRequestDto newUser) {
 
-        log.info("%nVia AuthController User created account with email: {}", newUser.email());
+        log.info("Via AuthController User created account with email: {}", newUser.email());
         return userCRUDService.register(newUser);
     }
 
@@ -87,7 +86,7 @@ public class UserCRUDController {
     public UserResponseDto editUserAccountByAdmin(@NotBlank @Email @RequestParam(name = "email") String email,
                                                   @Validated(Update.class)@RequestBody UpdateUserAccountRequestDto updateAccountDto) {
 
-        log.info("%nVia Admin Controller Admin with email: {} delete task: {}", email, updateAccountDto);
+        log.info("Via Admin Controller Admin with email: {} delete task: {}", email, updateAccountDto);
         return userCRUDService.updateUserAccount(email, updateAccountDto);
     }
 
@@ -99,7 +98,7 @@ public class UserCRUDController {
     @ResponseStatus(HttpStatus.OK)
     public void deleteUserAccount(@NotBlank @Email @RequestParam(name = "email") String email) {
 
-        log.info("%nVia Admin Controller User with email: {} was deleted on server", email);
+        log.info("Via Admin Controller User with email: {} was deleted on server", email);
         userCRUDService.deleteUserAccount(email);
     }
 }

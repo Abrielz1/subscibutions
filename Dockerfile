@@ -1,5 +1,5 @@
-FROM openjdk:17-jdk-slim
+FROM openjdk:17-jdk-full
 LABEL authors="Abriel"
 WORKDIR /app
-COPY target/subscibutions-0.0.1-SNAPSHOT.jarc subscibutions.jar
-CMD ["java","-jar","subscibutions.jar"]
+COPY target/subscriptions-0.0.1-SNAPSHOT.jar subscriptions.jar
+CMD ["java","-jar","subscriptions.jar"]

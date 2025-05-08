@@ -19,14 +19,14 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
 
-  link-shortener:
+  subscriptions:
     image: subscriptions
     build:
       context: .
     ports:
       - "8080:8080"
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432//subscriptions_db
+      SPRING_DATASOURCE_URL: jdbc:postgresql://subscriptions_db:5432/subscriptions_db
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: root
 
@@ -34,9 +34,15 @@ services:
       SPRING_FLYWAY_LOCATIONS: classpath:db/migration
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
 
-  depends_on:
-    - subscriptions_db
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
-  volumes:
-    postgres_data:
-      driver: local
+    depends_on:
+      - subscriptions_db
+
+volumes:
+  postgres_data:
+     driver: local

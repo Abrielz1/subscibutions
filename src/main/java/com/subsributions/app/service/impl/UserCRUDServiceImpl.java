@@ -1,11 +1,12 @@
 package com.subsributions.app.service.impl;
 
 import com.subsributions.app.entity.User;
-import com.subsributions.app.model.request.user.CreateAccountRequest;
+import com.subsributions.app.model.request.user.CreateAccountRequestDto;
 import com.subsributions.app.model.request.user.UpdateUserAccountRequestDto;
 import com.subsributions.app.model.response.user.UserResponseDto;
 import com.subsributions.app.repository.UserCRUDRepository;
 import com.subsributions.app.service.UserCRUDService;
+import com.subsributions.app.util.exception.exceptions.AlreadyExistsException;
 import com.subsributions.app.util.exception.exceptions.UserNotFoundException;
 import com.subsributions.app.util.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +40,13 @@ public class UserCRUDServiceImpl implements UserCRUDService {
     }
 
     @Override
-    public UserResponseDto register(CreateAccountRequest newUser) {
+    public UserResponseDto register(CreateAccountRequestDto newUser) {
+
+        if (this.checkAlreadyExistedUser(newUser.email())) {
+            log.error("Email: {} already registered", newUser.email());
+            throw new AlreadyExistsException("Email: %s already registered".formatted(newUser.email()));
+        }
+
         log.info("User with email: {} was created!", newUser.email());
         return UserMapper.toUserResponseDto(
                 userCRUDRepository.saveAndFlush(UserMapper.toUser(newUser)));
@@ -60,7 +67,7 @@ public class UserCRUDServiceImpl implements UserCRUDService {
 
     private User getUserFromDbByEmail(String email) {
 
-        return userCRUDRepository.getUserByEmail(email).orElseThrow(() -> {
+        return userCRUDRepository.findByEmail(email).orElseThrow(() -> {
             log.error("No user with such email: {}", email);
             return new UserNotFoundException("No user with such email: %s".formatted(email));
         });
@@ -71,5 +78,10 @@ public class UserCRUDServiceImpl implements UserCRUDService {
         Optional.ofNullable(updateUser.password()).ifPresent(userFromDb::setPassword);
         log.info("user was updated! With email: {}", userFromDb.getEmail());
         return userFromDb;
+    }
+
+    private boolean checkAlreadyExistedUser(String email) {
+
+        return userCRUDRepository.existsByEmail(email);
     }
 }

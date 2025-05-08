@@ -18,17 +18,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.hibernate.proxy.HibernateProxy;
 import java.time.LocalDate;
 import java.util.Objects;
 
 @Table(name = "user_subscriptions",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "subscription_id"}))
+
+@Where(clause = "is_declined = false")
 @Entity
 @Getter
 @Setter
 @Builder
 @ToString
+@SQLDelete(sql = "UPDATE user_subscriptions SET is_declined = true WHERE user_subscription_id = ?")
 @NamedEntityGraphs({
         @NamedEntityGraph(
                 name = "UserSubscription.full",
@@ -54,6 +59,12 @@ public class UserSubscription  {
     @ManyToOne
     @JoinColumn(name = "subscription_id")
     private Subscription subscription;
+
+    /**
+     * подписчик отказался от подписки
+     */
+    @Column(name = "is_declined", nullable = false)
+    private boolean isDeclined;
 
     @Column(name = "activation_date", nullable = false)
     private LocalDate activationDate = LocalDate.now();

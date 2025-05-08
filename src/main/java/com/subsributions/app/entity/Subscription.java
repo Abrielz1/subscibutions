@@ -11,8 +11,11 @@ import jakarta.persistence.NamedAttributeNode;
 import jakarta.persistence.NamedEntityGraph;
 import jakarta.persistence.NamedEntityGraphs;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
+import jakarta.validation.ValidationException;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -55,31 +58,25 @@ public class Subscription implements Serializable {
      * название подписки
      */
     @Column(name = "name")
-    private String subscriptionsName;
+    private String name;
 
     /**
      * дата начала подписки
      */
     @Column(name = "start_date")
-    private LocalDate startOfSubscription;
+    private LocalDate startDate;
 
     /**
      * дата окончания подписки
      */
     @Column(name = "end_date")
-    private LocalDate endOfSubscription;
-
-    /**
-     * подписчик отказался от подписки
-     */
-    @Column(name = "is_declined", nullable = false)
-    private Boolean isDeclined;
+    private LocalDate endDate;
 
     /**
      * подписка окончилась
      */
     @Column(name = "is_expired", nullable = false)
-    private Boolean isExpired;
+    private boolean isExpired;
 
     /**
      * версия записи для оптимистической блокировки
@@ -111,5 +108,13 @@ public class Subscription implements Serializable {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @PrePersist
+    @PreUpdate
+    private void validateDates() {
+        if (endDate.isBefore(startDate)) {
+            throw new ValidationException("End date must be after start date");
+        }
     }
 }
