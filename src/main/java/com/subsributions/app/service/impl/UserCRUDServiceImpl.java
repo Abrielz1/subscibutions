@@ -25,6 +25,12 @@ public class UserCRUDServiceImpl implements UserCRUDService {
 
     private final UserCRUDRepository userCRUDRepository;
 
+    /**
+     * Возвращает список пользователей с пагинацией.
+     *
+     * @param page параметры пагинации
+     * @return список DTO пользователей
+     */
     @Override
     public List<UserResponseDto> getUsersList(PageRequest page) {
         log.info("Users list was sent!");
@@ -33,12 +39,26 @@ public class UserCRUDServiceImpl implements UserCRUDService {
                 .toList();
     }
 
+    /**
+     * Возвращает пользователя по email.
+     *
+     * @param email электронная почта пользователя
+     * @return DTO пользователя
+     * @throws UserNotFoundException если пользователь не найден
+     */
     @Override
     public UserResponseDto getUserByEmail(String email) {
         log.info("User with email: {} was sent!", email);
         return UserMapper.toUserResponseDto(this.getUserFromDbByEmail(email));
     }
 
+    /**
+     * Регистрирует нового пользователя.
+     *
+     * @param newUser DTO с данными для регистрации
+     * @return DTO зарегистрированного пользователя
+     * @throws AlreadyExistsException если пользователь уже существует
+     */
     @Override
     public UserResponseDto register(CreateAccountRequestDto newUser) {
 
@@ -52,6 +72,14 @@ public class UserCRUDServiceImpl implements UserCRUDService {
                 userCRUDRepository.saveAndFlush(UserMapper.toUser(newUser)));
     }
 
+    /**
+     * Обновляет пароль пользователя.
+     *
+     * @param email электронная почта пользователя
+     * @param updateAccountDto DTO с новым паролем
+     * @return DTO обновленного пользователя
+     * @throws UserNotFoundException если пользователь не найден
+     */
     @Override
     public UserResponseDto updateUserAccount(String email, UpdateUserAccountRequestDto updateAccountDto) {
 
@@ -60,6 +88,12 @@ public class UserCRUDServiceImpl implements UserCRUDService {
                         this.getUserFromDbByEmail(email), updateAccountDto)));
     }
 
+    /**
+     * Удаляет учетную запись пользователя.
+     *
+     * @param email электронная почта пользователя
+     * @throws UserNotFoundException если пользователь не найден
+     */
     @Override
     public void deleteUserAccount(String email) {
         userCRUDRepository.findByEmail(email).ifPresent(userCRUDRepository::delete);

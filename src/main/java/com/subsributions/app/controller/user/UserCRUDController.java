@@ -7,6 +7,12 @@ import com.subsributions.app.service.UserCRUDService;
 import com.subsributions.app.util.Create;
 import com.subsributions.app.util.Update;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -28,7 +34,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-@Tag(name = "UserCRUDController", description = "Контроллер для CRUD операций над пользователями")
+@Tag(name = "UserCRUDController", description = "Полное управление учетными записями пользователей")
 @Slf4j
 @Validated
 @RestController
@@ -39,8 +45,29 @@ public class UserCRUDController {
     private final UserCRUDService userCRUDService;
 
     @Operation(
-            summary = "Получение списка пользователей со limit/offset пагинацией",
-            description = "\"Получение списка пользователей"
+            summary = "Получение пользователя по email",
+            description = "Возвращает полную информацию о пользователе по его email",
+            parameters = @Parameter(
+                    name = "email",
+                    description = "Электронная почта пользователя",
+                    example = "user@example.com",
+                    required = true
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Пользователь найден",
+                            content = @Content(schema = @Schema(implementation = UserResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Невалидный формат email"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Пользователь не найден"
+                    )
+            }
     )
     @GetMapping("/by-email")
     @ResponseStatus(HttpStatus.OK)
@@ -52,8 +79,33 @@ public class UserCRUDController {
     }
 
     @Operation(
-            summary = "Получение списка пользователей со limit/offset пагинацией",
-            description = "Получение списка пользователей"
+            summary = "Постраничное получение пользователей",
+            description = "Возвращает список пользователей с пагинацией",
+            parameters = {
+                    @Parameter(
+                            name = "from",
+                            description = "Номер страницы (начиная с 0)",
+                            example = "0",
+                            schema = @Schema(minimum = "0", defaultValue = "0")
+                    ),
+                    @Parameter(
+                            name = "size",
+                            description = "Количество элементов на странице",
+                            example = "10",
+                            schema = @Schema(minimum = "1", maximum = "100", defaultValue = "10")
+                    )
+            },
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Список пользователей",
+                            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserResponseDto.class)))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Некорректные параметры пагинации"
+                    )
+            }
     )
     @GetMapping("/all")
     @ResponseStatus(HttpStatus.OK)
@@ -66,8 +118,31 @@ public class UserCRUDController {
     }
 
     @Operation(
-            summary = "Регистрация пользователя",
-            description = "Позволяет зарегистрировать пользователя"
+            summary = "Регистрация нового пользователя",
+            description = "Создает новую учетную запись пользователя в системе",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                        {
+                          "email": "user@example.com",
+                          "password": "SecurePass123!"
+                        }
+                    """
+                            )
+                    )
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "Учетная запись успешно создана",
+                            content = @Content(schema = @Schema(implementation = UserResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "409",
+                            description = "Пользователь с таким email уже существует"
+                    )
+            }
     )
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
@@ -78,8 +153,40 @@ public class UserCRUDController {
     }
 
     @Operation(
-            summary = "Редактирование пользователя (USER) по id (User)",
-            description = "Позволяет редактирование пользователя"
+            summary = "Обновление данных пользователя",
+            description = "Позволяет изменить пароль пользователя",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            examples = @ExampleObject(
+                                    value = """
+                    {
+                      "password": "NewSecurePass123!"
+                    }
+                """
+                            )
+                    )
+            ),
+            parameters = @Parameter(
+                    name = "email",
+                    description = "Электронная почта пользователя",
+                    example = "user@example.com",
+                    required = true
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Данные успешно обновлены",
+                            content = @Content(schema = @Schema(implementation = UserResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Невалидные входные данные"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Пользователь не найден"
+                    )
+            }
     )
     @PutMapping("/update")
     @ResponseStatus(HttpStatus.OK)
@@ -91,8 +198,24 @@ public class UserCRUDController {
     }
 
     @Operation(
-            summary = "Удаление пользователя (USER) по id (User) (ADMIN)",
-            description = "Позволяет удалить пользователя (ADMIN)"
+            summary = "Удаление пользователя",
+            description = "Полное удаление учетной записи пользователя из системы",
+            parameters = @Parameter(
+                    name = "email",
+                    description = "Электронная почта пользователя",
+                    example = "user@example.com",
+                    required = true
+            ),
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Пользователь успешно удален"
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Пользователь не найден"
+                    )
+            }
     )
     @DeleteMapping("/delete")
     @ResponseStatus(HttpStatus.OK)

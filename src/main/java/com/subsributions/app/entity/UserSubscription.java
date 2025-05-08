@@ -1,5 +1,6 @@
 package com.subsributions.app.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,6 +25,9 @@ import org.hibernate.proxy.HibernateProxy;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
+@Schema(description = "Связь пользователя с подпиской")
 @Table(name = "user_subscriptions",
         uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "subscription_id"}))
 
@@ -47,6 +51,9 @@ import java.util.Objects;
 @AllArgsConstructor
 public class UserSubscription  {
 
+    @Schema(description = "Уникальный идентификатор связи",
+            example = "456",
+            accessMode = READ_ONLY)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_subscription_id")
@@ -63,9 +70,13 @@ public class UserSubscription  {
     /**
      * подписчик отказался от подписки
      */
+    @Schema(description = "Статус подписки",
+            example = "false")
     @Column(name = "is_declined", nullable = false)
     private boolean isDeclined;
 
+    @Schema(description = "Дата активации",
+            example = "2024-01-01")
     @Column(name = "activation_date", nullable = false)
     private LocalDate activationDate = LocalDate.now();
 

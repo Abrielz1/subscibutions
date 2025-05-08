@@ -1,5 +1,6 @@
 package com.subsributions.app.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -26,11 +27,13 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+
 
 /**
  * Класс описывающий сущность пользователь (User)
  */
-
+@Schema(description = "Сущность пользователя")
 @Table(name = "users")
 @Entity
 @Getter
@@ -52,6 +55,9 @@ public class User implements Serializable {
     /**
      * id пользователя
      */
+    @Schema(description = "Уникальный идентификатор пользователя",
+            example = "12345",
+            accessMode = READ_ONLY)
     @Id
     @Column(name = "id", nullable = false, unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

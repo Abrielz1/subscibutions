@@ -5,13 +5,20 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public record UserDeclinedSubscriptionRequestDto(@Schema(description = "Электронная почта подписчика")
-                                               @NotBlank
-                                               @Email
-                                               @Size(min = 8, max = 32)
-                                               String email,
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
-                                               @Schema(description = "название подписки")
-                                               @NotBlank
-                                               String name) {
+@Schema(description = "Запрос на отмену подписки")
+public record UserDeclinedSubscriptionRequestDto(@Schema(description = "Электронная почта пользователя",
+                                                        example = "user@example.com",
+                                                        requiredMode = REQUIRED)
+                                                @NotBlank
+                                                @Email
+                                                @Size(min = 8, max = 32)
+                                                String email,
+
+                                                @Schema(description = "Название подписки",
+                                                        example = "Premium Access",
+                                                        requiredMode = REQUIRED)
+                                                @NotBlank
+                                                String name) {
 }

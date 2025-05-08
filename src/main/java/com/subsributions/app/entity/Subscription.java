@@ -1,5 +1,6 @@
 package com.subsributions.app.entity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +30,10 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import static io.swagger.v3.oas.annotations.media.Schema.AccessMode.READ_ONLY;
+import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 
+@Schema(description = "Сущность подписки")
 @Table(name = "subscriptions")
 @Entity
 @Getter
@@ -49,6 +53,9 @@ public class Subscription implements Serializable {
     /**
      * id подписки
      */
+    @Schema(description = "Уникальный идентификатор",
+            example = "123",
+            accessMode = READ_ONLY)
     @Id
     @Column(name = "id", nullable = false, unique = true, updatable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,24 +64,33 @@ public class Subscription implements Serializable {
     /**
      * название подписки
      */
-    @Column(name = "name")
+    @Schema(description = "Название подписки",
+            example = "Premium Access",
+            requiredMode = REQUIRED)
+    @Column(name = "name", nullable = false)
     private String name;
 
     /**
      * дата начала подписки
      */
+    @Schema(description = "Дата начала действия",
+            example = "2024-01-01")
     @Column(name = "start_date")
     private LocalDate startDate;
 
     /**
      * дата окончания подписки
      */
+    @Schema(description = "Дата окончания действия",
+            example = "2024-12-31")
     @Column(name = "end_date")
     private LocalDate endDate;
 
     /**
      * подписка окончилась
      */
+    @Schema(description = "подписка окончилась",
+            example = "2025-12-31")
     @Column(name = "is_expired", nullable = false)
     private boolean isExpired;
 

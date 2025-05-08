@@ -40,7 +40,7 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handlerAlreadyExistsHandler(final AlreadyExistsException exception) {
 
         log.warn("401 {}", exception.getMessage(), exception);

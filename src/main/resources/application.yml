@@ -4,10 +4,7 @@ server:
 spring:
   application:
     name: subsvibutions
-  data:
-    redis:
-      host: localhost
-      port: 6379
+
   jpa:
     hibernate:
       ddl-auto: update
